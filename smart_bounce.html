@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Smart Bounce Link</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#151c31;--text:#f3f5fa;--muted:#aab4cc;--accent:#7c9cff;--border:#2a3551}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:radial-gradient(circle at top,#202b4b,var(--bg) 50%);color:var(--text);padding:24px}
+.wrap{max-width:760px;margin:0 auto}.card{background:rgba(21,28,49,.94);border:1px solid var(--border);border-radius:20px;padding:24px;margin:18px 0;box-shadow:0 16px 45px #0004}h1{font-size:clamp(26px,5vw,38px);margin:0 0 8px}h2{font-size:20px;margin:0 0 12px}p{color:var(--muted);line-height:1.55}label{display:block;font-weight:650;margin:12px 0 7px}input{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--border);background:#0b1020;color:var(--text);font:inherit}button,.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;padding:13px 16px;background:var(--accent);color:#081127;font-weight:750;font-size:15px;cursor:pointer;text-decoration:none;width:100%;margin-top:12px}button.secondary{background:#273450;color:var(--text);border:1px solid var(--border)}.small{font-size:13px}.hidden{display:none}.destination{overflow-wrap:anywhere;background:#0b1020;border:1px solid var(--border);padding:12px;border-radius:12px;color:#dce5ff}.center{text-align:center}.icon{font-size:50px;margin-bottom:8px}.instructions{border:1px solid var(--border);padding:14px;border-radius:14px;margin-top:14px;color:var(--muted)}.steps{display:flex;gap:10px;flex-wrap:wrap}.steps div{flex:1;min-width:160px;background:#0b1020;border:1px solid var(--border);border-radius:12px;padding:12px}.notice{font-size:12px;color:var(--muted);margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="center"><h1>Smart Bounce Link</h1><p>Create a link that presents a clear, user-initiated option to open a destination in their external browser.</p></header>
+  <section class="card" id="generator">
+    <h2>Link Generator</h2>
+    <label for="url">Destination URL</label><input id="url" type="url" placeholder="https://example.com" autocomplete="url">
+    <button id="create">Create Bounce Link</button>
+    <div id="result" class="hidden"><label>Your generated link</label><div id="generated" class="destination"></div><button id="copy" class="secondary">Copy Link</button><p class="small">Host this HTML file on your website first. Generated links use the hosted file's address.</p></div>
+  </section>
+  <section class="card hidden" id="bounce">
+    <div class="center"><div class="icon">↗</div><h1>Continue in your browser</h1><p>Tap below to open the destination. If your app keeps this page inside its browser, use its menu and choose <strong>Open in browser</strong>.</p></div>
+    <div class="destination" id="target"></div>
+    <a class="btn" id="open" href="#" target="_blank" rel="noopener noreferrer">OPEN DESTINATION</a>
+    <div class="instructions"><strong>Can't open externally?</strong><div class="steps"><div>1. Tap the app's <strong>⋯</strong> or share/menu icon.</div><div>2. Choose <strong>Open in browser</strong> or <strong>Open in Safari / Chrome</strong>.</div></div></div>
+    <p class="notice">This page does not force a browser switch. Opening behaviour is controlled by the app and device.</p>
+  </section>
+</div>
+<script>
+(function(){
+ const params=new URLSearchParams(location.search);const dest=params.get('to');
+ const generator=document.getElementById('generator'),bounce=document.getElementById('bounce');
+ function validUrl(s){try{const u=new URL(s);return u.protocol==='https:'||u.protocol==='http:'}catch{return false}}
+ if(dest&&validUrl(dest)){generator.classList.add('hidden');bounce.classList.remove('hidden');document.getElementById('target').textContent=dest;document.getElementById('open').href=dest;}
+ document.getElementById('create').addEventListener('click',()=>{
+   const input=document.getElementById('url').value.trim();if(!validUrl(input)){alert('Please enter a valid http or https destination URL.');return;}
+   const base=location.href.split('?')[0].split('#')[0];const link=base+'?to='+encodeURIComponent(input);document.getElementById('generated').textContent=link;document.getElementById('result').classList.remove('hidden');
+ });
+ document.getElementById('copy').addEventListener('click',async()=>{const text=document.getElementById('generated').textContent;try{await navigator.clipboard.writeText(text);document.getElementById('copy').textContent='Copied!';setTimeout(()=>document.getElementById('copy').textContent='Copy Link',1500)}catch{prompt('Copy your link:',text)}});
+})();
+</script>
+</body>
+</html>
